@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "bunyan": "^1.8.14",
+    "dd-trace": "^0.29.1",
+    "express": "^4.17.1"
+  }
+}
