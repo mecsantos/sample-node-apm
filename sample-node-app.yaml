@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs
+  namespace: testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs
+  template:
+    metadata:
+      labels:
+        app: nodejs
+    spec:
+      containers:
+      - name: sample-node-app
+        image: mecsantos/sample-node-apm:1.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DD_ENV
+          value: "dev"
+        - name: DD_SERVICE
+          value: "my_express_app"
+        - name: DD_VERSION
+          value: "1.0.0"
