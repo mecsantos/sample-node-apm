@@ -12,16 +12,22 @@ spec:
     metadata:
       labels:
         app: nodejs
+      annotations:
+        ad.datadoghq.com/sample-node-app.logs: '[{"source":"nodejs","service":"my_express_app"}]'
     spec:
       containers:
-      - name: sample-node-app
-        image: mecsantos/sample-node-apm:1.0
-        ports:
-        - containerPort: 8080
-        env:
-        - name: DD_ENV
-          value: "dev"
-        - name: DD_SERVICE
-          value: "my_express_app"
-        - name: DD_VERSION
-          value: "1.0.0"
+        - name: sample-node-app
+          image: mecsantos/sample-node-apm:1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DD_ENV
+              value: "dev"
+            - name: DD_SERVICE
+              value: "my_express_app"
+            - name: DD_VERSION
+              value: "1.0.0"
+            - name: DD_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
