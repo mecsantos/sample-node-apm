@@ -1,3 +1,6 @@
+### Prerequisites
+There should be a Datadog Agent receiving the traces and logs.
+
 ### Build
 
 `docker build -t mecsantos/sample-node-apm .`
