@@ -19,3 +19,7 @@ DD_VERSION=1.0.0
 ### Sample Deployment on Kubernetes
 
 `kubectl apply -f sample-node-app.yaml`
+
+`kubectl apply -f load-balancer.yaml`
+
+Modify Security Groups setting of the Load Balancer.
