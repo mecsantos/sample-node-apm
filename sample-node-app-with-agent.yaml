@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs
+  template:
+    metadata:
+      labels:
+        app: nodejs
+      annotations:
+        ad.datadoghq.com/sample-node-app.logs: '[{"source":"nodejs","service":"my_express_app"}]'
+    spec:
+      serviceAccountName: datadog-agent
+      containers:
+        - name: sample-node-app
+          image: mecsantos/sample-node-apm:1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DD_ENV
+              value: "dev"
+            - name: DD_SERVICE
+              value: "my_express_app"
+            - name: DD_VERSION
+              value: "1.0.0"
+            - name: DD_AGENT_HOST
+              value: "localhost"
+        ## Running the Agent as a side-car
+        - name: datadog-agent
+          image: datadog/agent
+          ports:
+            - containerPort: 8126
+              name: traceport
+              protocol: TCP
+          env:
+            - name: DD_API_KEY
+              value: "<API_KEY>" #Add API Key
+            - name: DD_SITE
+              value: "datadoghq.com"
+            - name: DD_EKS_FARGATE
+              value: "true"
+            - name: DD_APM_ENABLED
+              value: "true"
+            - name: DD_KUBERNETES_KUBELET_NODENAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+          resources:
+              requests:
+                memory: "256Mi"
+                cpu: "200m"
+              limits:
+                memory: "256Mi"
+                cpu: "200m"
+# Agent RBAC
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: datadog-agent
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes/metrics
+      - nodes/spec
+      - nodes/stats
+      - nodes/proxy
+      - nodes/pods
+      - nodes/healthz
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: datadog-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: datadog-agent
+subjects:
+  - kind: ServiceAccount
+    name: datadog-agent
+    namespace: default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: datadog-agent
+  namespace: default
