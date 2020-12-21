@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nodejs
-  namespace: testing
+  # namespace: testing
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: nodejs
