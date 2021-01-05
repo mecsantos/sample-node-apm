@@ -2,9 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nodejs
-  # namespace: testing
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: nodejs
@@ -31,3 +30,5 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            # - name: DD_TRACE_DEBUG
+            #   value: "true"
